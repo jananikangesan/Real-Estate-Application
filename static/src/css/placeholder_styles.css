@@ -1,0 +1,5 @@
+.o_form_view .o_input::placeholder {
+    font-size: 22px;
+    font-weight: 400;
+    color: #555;
+}

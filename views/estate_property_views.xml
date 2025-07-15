@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Tree (List) View -->
+    <record id="view_estate_property_tree" model="ir.ui.view">
+        <field name="name">estate.property.tree</field>
+        <field name="model">real.estate.property</field>
+        <field name="arch" type="xml">
+            <tree string="Properties">
+                <field name="name"/>
+                <field name="expected_price"/>
+                <field name="selling_price"/>
+                <field name="bedrooms"/>
+                <field name="living_area"/>
+                <field name="garden"/>
+                <field name="garage"/>
+            </tree>
+        </field>
+    </record>
+
+   <record id="view_estate_property_form" model="ir.ui.view">
+        <field name="name">estate.property.form</field>
+        <field name="model">real.estate.property</field>
+        <field name="arch" type="xml">
+            <form string="Property">
+                <sheet>
+                    <!-- Optional archived field -->
+                    <field name="active" invisible="1"/>
+
+                 <!-- Top section (basic info) in two columns -->
+                    <group col="2">
+                        <!-- Left Column -->
+                        <field name="name" placeholder="Title"/>
+
+                        <group>
+                            <field name="postcode"/>
+                            <field name="date_availability"/>
+                        </group>
+
+                        <!-- Right Column -->
+                        <group>
+                            <field name="expected_price"/>
+                            <field name="selling_price" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Tabs -->
+                    <notebook>
+                        <page string="Description">
+                            <group col="2">
+                                <group>
+                                    <field name="description"/>
+                                    <field name="bedrooms"/>
+                                    <field name="living_area"/>
+                                    <field name="facades"/>
+                                     <field name="state"/>
+                                </group>
+                                <group>
+                                    <field name="garage"/>
+                                    <field name="garden"/>
+                                    <field name="garden_area"/>
+                                    <field name="garden_orientation"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Action to Open the View -->
+    <record id="action_estate_property" model="ir.actions.act_window">
+        <field name="name">Properties</field>
+        <field name="res_model">real.estate.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_estate_property_search" model="ir.ui.view">
+    <field name="name">estate.property.search</field>
+    <field name="model">real.estate.property</field>
+    <field name="arch" type="xml">
+      <search string="Search Properties">
+
+        <!-- Basic search field -->
+        <field name="name"/>
+
+        <!-- Filter for Available Properties -->
+        <filter name="available"
+                string="Available"
+                domain="[('state', 'in', ['new', 'offer_received'])]" />
+
+        <!-- Other filters -->
+        <filter name="has_garden" string="Has Garden" domain="[('garden', '=', True)]" />
+        <filter name="has_garage" string="Has Garage" domain="[('garage', '=', True)]" />
+
+        <!-- Group By -->
+        <group expand="1" string="Group By">
+          <filter name="group_postcode" string="Postcode" context="{'group_by': 'postcode'}"/>
+          <filter name="group_garden_orientation" string="Garden Orientation" context="{'group_by': 'garden_orientation'}"/>
+          <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+        </group>
+
+        <!-- Advanced fields -->
+        <field name="bedrooms"/>
+        <field name="expected_price"/>
+        <field name="state"/>
+        <field name="garden_orientation"/>
+        <field name="postcode"/>
+
+      </search>
+    </field>
+  </record>
+
+       <!-- Top-Level Menu -->
+        <menuitem id="menu_real_estate_root"
+                  name="Real Estate"
+                  sequence="10"/>
+
+        <!-- Second-Level Menu (Advertisements) under Real Estate -->
+        <menuitem id="menu_advertisement"
+                  name="Advertisements"
+                  parent="menu_real_estate_root"
+                  sequence="20"/>
+
+        <!-- Third-Level Menu (Properties) under Advertisements -->
+        <menuitem id="menu_estate_properties"
+                  name="Properties"
+                  parent="menu_advertisement"
+                  action="action_estate_property"
+                  sequence="30"/>
+
+</odoo>
