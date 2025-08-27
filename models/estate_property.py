@@ -46,5 +46,34 @@ class EstateProperty(models.Model):
         copy=False,
         default='new'
     )
+    property_type_id = fields.Many2one("estate.property.type", string="Property Type")
+
+    # Buyer: use res.partner, should not be copied
+    buyer_id = fields.Many2one(
+        "res.partner",
+        string="Buyer",
+        copy=False,
+    )
+
+    # Salesperson: use res.users, default current user
+    salesperson_id = fields.Many2one(
+        "res.users",
+        string="Salesperson",
+        default=lambda self: self.env.user,
+    )
+
+    tag_ids = fields.Many2many(
+        "estate.property.tag",
+        string="Tags",
+    )
+
+    offers_ids = fields.One2many(
+        "estate.property.offer",
+        "property_id",
+        string="Offers"
+    )
+
+
+
 
 

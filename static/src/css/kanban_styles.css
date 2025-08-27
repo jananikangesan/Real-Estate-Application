@@ -1,0 +1,10 @@
+/* Increase the font size for Kanban cards */
+.oe_kanban_card {
+    font-size: 18px;  /* change this value as needed */
+}
+
+/* Optional: make the tag text bigger too */
+.oe_kanban_card .o_tag {
+    font-size: 16px;
+    font-weight: bold;
+}

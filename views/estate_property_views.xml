@@ -13,6 +13,8 @@
                 <field name="living_area"/>
                 <field name="garden"/>
                 <field name="garage"/>
+                <field name="property_type_id"/>
+
             </tree>
         </field>
     </record>
@@ -30,8 +32,10 @@
                     <group col="2">
                         <!-- Left Column -->
                         <field name="name" placeholder="Title"/>
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
 
                         <group>
+                            <field name="property_type_id"/>
                             <field name="postcode"/>
                             <field name="date_availability"/>
                         </group>
@@ -62,6 +66,32 @@
                                 </group>
                             </group>
                         </page>
+                        <page string="Other Info">
+                            <group col="2">
+                                <field name="buyer_id"/>
+                                <field name="salesperson_id"/>
+                            </group>
+                        </page>
+
+                        <page string="Offers">
+                            <field name="offers_ids">
+                                <tree editable="bottom">
+                                    <field name="partner_id"/>
+                                    <field name="price"/>
+                                    <field name="status"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="partner_id"/>
+                                            <field name="price"/>
+                                            <field name="status"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
                     </notebook>
 
                 </sheet>
@@ -74,7 +104,7 @@
     <record id="action_estate_property" model="ir.actions.act_window">
         <field name="name">Properties</field>
         <field name="res_model">real.estate.property</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">kanban,tree,form</field>
     </record>
 
     <record id="view_estate_property_search" model="ir.ui.view">
@@ -108,10 +138,52 @@
         <field name="state"/>
         <field name="garden_orientation"/>
         <field name="postcode"/>
+        <field name="property_type_id"/>
+        <field name="tag_ids"/>
+        <filter name="group_tags" string="Tags" context="{'group_by':'tag_ids'}"/>
 
       </search>
     </field>
   </record>
+
+<!--    kanban view-->
+    <record id="view_estate_property_kanban" model="ir.ui.view">
+        <field name="name">estate.property.kanban</field>
+        <field name="model">real.estate.property</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_example">
+                <field name="name"/>
+                <field name="expected_price"/>
+                <field name="selling_price"/>
+                <field name="property_type_id"/>
+                <field name="tag_ids"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card">
+                            <strong>
+                                <field name="name"/>
+                            </strong><br/>
+
+                            <div>
+                                <span>Type: </span><field name="property_type_id"/>
+                            </div>
+                            <div>
+                                <span>Expected: </span><field name="expected_price"/>
+                            </div>
+                            <div>
+                                <span>Selling: </span><field name="selling_price"/>
+                            </div>
+
+                            <!-- Tags displayed with colors -->
+                            <div>
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
 
        <!-- Top-Level Menu -->
         <menuitem id="menu_real_estate_root"
@@ -123,6 +195,11 @@
                   name="Advertisements"
                   parent="menu_real_estate_root"
                   sequence="20"/>
+
+        <menuitem id="menu_real_estate_settings"
+              name="Settings"
+              parent="menu_real_estate_root"
+              sequence="50"/>
 
         <!-- Third-Level Menu (Properties) under Advertisements -->
         <menuitem id="menu_estate_properties"
