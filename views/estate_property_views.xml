@@ -44,6 +44,7 @@
                         <group>
                             <field name="expected_price"/>
                             <field name="selling_price" readonly="1"/>
+                            <field name="best_price"/>
                         </group>
                     </group>
 
@@ -63,6 +64,7 @@
                                     <field name="garden"/>
                                     <field name="garden_area"/>
                                     <field name="garden_orientation"/>
+                                     <field name="total_area"/>
                                 </group>
                             </group>
                         </page>
@@ -74,21 +76,15 @@
                         </page>
 
                         <page string="Offers">
-                            <field name="offers_ids">
-                                <tree editable="bottom">
+                            <field name="offers_ids" mode="tree,form">
+                                <tree>
                                     <field name="partner_id"/>
                                     <field name="price"/>
                                     <field name="status"/>
+                                    <field name="validity"/>
+                                    <field name="validity_date"/>
                                 </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="partner_id"/>
-                                            <field name="price"/>
-                                            <field name="status"/>
-                                        </group>
-                                    </sheet>
-                                </form>
+
                             </field>
                         </page>
 
@@ -159,7 +155,7 @@
                 <field name="tag_ids"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_card">
+                        <div  t-attf-class="oe_kanban_global_click oe_kanban_card" style="margin:10px; padding:10px; border-radius:8px; box-shadow:0px 2px 5px rgba(0,0,0,0.1);">
                             <strong>
                                 <field name="name"/>
                             </strong><br/>

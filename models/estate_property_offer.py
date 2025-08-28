@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import fields, models, api
+from datetime import date, timedelta
 
 class EstatePropertyOffer(models.Model):
     _name = "estate.property.offer"
@@ -8,8 +9,7 @@ class EstatePropertyOffer(models.Model):
     partner_id = fields.Many2one("res.partner", string="Buyer", required=True)
 
     validity = fields.Integer(string="Validity (days)", default=7)
-    status = fields.Selection([
-        ('accepted', 'Accepted'),
+    status = fields.Selection([('accepted', 'Accepted'),
         ('refused', 'Refused')
     ], string="Status")
 

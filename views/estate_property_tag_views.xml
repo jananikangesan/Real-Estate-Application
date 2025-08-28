@@ -37,7 +37,7 @@
                 <field name="color"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_card o_kanban_record">
+                        <div  t-attf-class="oe_kanban_global_click oe_kanban_card">
                             <span t-attf-class="o_tag o_tag_color_#{record.color.raw_value}">
                                 <t t-esc="record.name.value"/>
                             </span>

@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import fields, models, api
 from datetime import date, timedelta
 
 
@@ -72,6 +72,42 @@ class EstateProperty(models.Model):
         "property_id",
         string="Offers"
     )
+
+    # Computed field for total area
+    total_area = fields.Float(
+        string="Total Area (sqm)",
+        compute="_compute_total_area",
+        store=True
+    )
+
+    #  Computed field for best offer
+    best_price = fields.Float(
+        string="Best Offer",
+        compute="_compute_best_price",
+        store=True
+    )
+
+    @api.depends("living_area", "garden_area")
+    def _compute_total_area(self):
+        for record in self:
+            record.total_area = record.living_area + record.garden_area
+
+    @api.depends("offers_ids.price")
+    def _compute_best_price(self):
+        for record in self:
+            record.best_price = max(record.offers_ids.mapped("price"), default=0.0)
+
+    @api.onchange('garden')
+    def _onchange_garden(self):
+        for record in self:
+            if record.garden:
+                # Set defaults when garden is checked
+                record.garden_area = 10
+                record.garden_orientation = 'north'
+            else:
+                # Optional: clear values if unchecked
+                record.garden_area = 0
+                record.garden_orientation = False
 
 
 

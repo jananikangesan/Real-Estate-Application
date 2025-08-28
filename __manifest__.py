@@ -15,6 +15,7 @@
         'web.assets_backend': [
             'Real_Estate/static/src/css/placeholder_styles.css',
             'Real_Estate/static/src/css/kanban_styles.css',
+            'Real_Estate/static/src/css/tag_colors.css',
 
         ],
     },

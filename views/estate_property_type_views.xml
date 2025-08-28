@@ -34,7 +34,7 @@
                 <field name="name"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_card">
+                        <div  t-attf-class="oe_kanban_global_click oe_kanban_card">
                             <strong><field name="name"/></strong>
                         </div>
                     </t>

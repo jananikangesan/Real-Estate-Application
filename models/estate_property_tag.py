@@ -5,4 +5,4 @@ class EstatePropertyTag(models.Model):
     _description = "Property Tag"
 
     name = fields.Char(string="Name", required=True)
-    color = fields.Integer(string="Color")  # useful for kanban or tag widget
+    color = fields.Integer(string="Color", default=0)  # useful for kanban or tag widget
