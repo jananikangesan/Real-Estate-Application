@@ -24,6 +24,16 @@
         <field name="model">real.estate.property</field>
         <field name="arch" type="xml">
             <form string="Property">
+                <header>
+                    <button name="action_sold" type="object" string="Sold"
+                            icon="fa-check" class="btn-primary"
+                            modifiers="{'invisible': [['state','in',['sold','canceled']]]}"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            icon="fa-ban" class="btn-secondary"
+                            modifiers="{'invisible': [['state','=','canceled']]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
+                </header>
                 <sheet>
                     <!-- Optional archived field -->
                     <field name="active" invisible="1"/>
@@ -76,15 +86,20 @@
                         </page>
 
                         <page string="Offers">
-                            <field name="offers_ids" mode="tree,form">
+                            <field name="offers_ids">
                                 <tree>
                                     <field name="partner_id"/>
                                     <field name="price"/>
-                                    <field name="status"/>
                                     <field name="validity"/>
                                     <field name="validity_date"/>
+                                    <button name="action_accept" type="object" string="Accept"
+                                            icon="fa-check"
+                                            attrs="{'invisible':[('status','=','accepted')]}"/>
+                                    <button name="action_refuse" type="object" string="Refuse"
+                                            icon="fa-times"
+                                            attrs="{'invisible':[('status','=','refused')]}"/>
+                                    <field name="status"/>
                                 </tree>
-
                             </field>
                         </page>
 

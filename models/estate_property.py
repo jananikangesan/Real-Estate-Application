@@ -1,5 +1,7 @@
 from odoo import fields, models, api
 from datetime import date, timedelta
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 
 class EstateProperty(models.Model):
@@ -109,6 +111,49 @@ class EstateProperty(models.Model):
                 record.garden_area = 0
                 record.garden_orientation = False
 
+    def action_cancel(self):
+        """Cancel property unless already sold."""
+        for record in self:
+            if record.state == "sold":
+                raise UserError("A sold property cannot be cancelled.")
+            record.state = "canceled"
+
+    def action_sold(self):
+        """Mark property as sold unless cancelled."""
+        for record in self:
+            if record.state == "canceled":
+                raise UserError("A cancelled property cannot be sold.")
+            record.state = "sold"
+
+    @api.constrains('expected_price')
+    def _check_expected_price(self):
+        for record in self:
+            if record.expected_price <= 0:
+                raise ValidationError("The expected price must be strictly positive.")
+
+    @api.constrains('selling_price')
+    def _check_selling_price(self):
+        for record in self:
+            if record.selling_price < 0:
+                raise ValidationError("The selling price must be positive.")
+
+    @api.constrains('selling_price', 'expected_price')
+    def _check_selling_price(self):
+        for record in self:
+            # Skip the check if selling price is zero (not validated yet)
+            if float_is_zero(record.selling_price, precision_digits=2):
+                continue
+
+            # Selling price must be positive
+            if float_compare(record.selling_price, 0.0, precision_digits=2) < 0:
+                raise ValidationError("The selling price must be positive.")
+
+            # Selling price cannot be lower than 90% of expected price
+            min_price = 0.9 * record.expected_price
+            if float_compare(record.selling_price, min_price, precision_digits=2) < 0:
+                raise ValidationError(
+                    "The selling price cannot be lower than 90% of the expected price."
+                )
 
 
 
