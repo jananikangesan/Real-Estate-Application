@@ -1,9 +1,11 @@
 from odoo import fields, models, api
 from datetime import date, timedelta
+from odoo.exceptions import  ValidationError
 
 class EstatePropertyOffer(models.Model):
     _name = "estate.property.offer"
     _description = "Property Offer"
+    _order = "price desc"
 
     price = fields.Float(string="Offer Price", required=True)
     partner_id = fields.Many2one("res.partner", string="Buyer", required=True)
@@ -18,6 +20,13 @@ class EstatePropertyOffer(models.Model):
         string="Property",
         required=True,
         ondelete="cascade"
+    )
+
+    property_type_id = fields.Many2one(
+        'estate.property.type',
+        string='Property Type',
+        related='property_id.property_type_id',
+        store=True
     )
 
     # Validity in days
@@ -66,3 +75,37 @@ class EstatePropertyOffer(models.Model):
         for record in self:
             if record.price <= 0:
                 raise ValidationError("The offer price must be strictly positive.")
+
+    @api.model
+    def create(self, vals):
+        offer = super().create(vals)
+        # Set property state to 'offer_received' when a new offer is created
+        offer.property_id.state = 'offer_received'
+        return offer
+
+    def action_accept(self):
+        for offer in self:
+            other_offers = offer.property_id.offers_ids - offer
+            offer.status = 'accepted'
+            offer.property_id.selling_price = offer.price
+            offer.property_id.state = 'offer_accepted'
+            other_offers.write({'status': 'refused'})
+
+    def action_refuse(self):
+        for offer in self:
+            offer.status = 'refused'
+
+    @api.constrains('price')
+    def _check_offer_price_positive(self):
+        for offer in self:
+            if offer.price <= 0:
+                raise ValidationError("The offer price must be strictly positive.")
+
+    @api.constrains('price', 'property_id')
+    def _check_price_higher_than_existing(self):
+        for offer in self:
+            existing_offers = offer.property_id.offers_ids.filtered(lambda o: o.id != offer.id)
+            if existing_offers and offer.price <= max(existing_offers.mapped('price')):
+                raise ValidationError("Offer price must be higher than existing offers.")
+
+

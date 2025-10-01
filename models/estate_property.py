@@ -7,6 +7,7 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 class EstateProperty(models.Model):
     _name = "real.estate.property"
     _description = "Real Estate Property"
+    _order = "id desc"
 
     def _default_availability_date(self):
         return date.today() + timedelta(days=90)
@@ -155,6 +156,18 @@ class EstateProperty(models.Model):
                     "The selling price cannot be lower than 90% of the expected price."
                 )
 
+    def unlink(self):
+        for prop in self:
+            if prop.state not in ['new', 'canceled']:
+                raise UserError("You can only delete properties that are New or Cancelled.")
+        return super().unlink()
 
+    def write(self, vals):
+        # Prevent archiving of non-new/canceled properties
+        if 'active' in vals and vals['active'] == False:
+            for prop in self:
+                if prop.state not in ['new', 'canceled']:
+                    raise UserError("You can only archive properties that are New or Cancelled.")
+        return super().write(vals)
 
 

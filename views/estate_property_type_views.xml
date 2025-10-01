@@ -6,7 +6,8 @@
         <field name="model">estate.property.type</field>
         <field name="arch" type="xml">
             <tree string="Property Types">
-                <field name="name" />
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
             </tree>
         </field>
     </record>
@@ -17,10 +18,31 @@
         <field name="model">estate.property.type</field>
         <field name="arch" type="xml">
             <form string="Property Type">
+                <header>
+                    <button name="%(action_estate_property_offer)d"
+                            type="action"
+                            string="Offers"
+                            icon="fa-money"
+                            context="{'search_default_property_type_id': active_id}"/>
+
+                </header>
                 <sheet>
                     <group col="2">
                         <field name="name" placeholder="Name" nolabel="1" colspan="2"/>
+                        <field name="sequence"/>
                     </group>
+                    <notebook>
+                        <page string="Properties">
+                            <field name="property_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="expected_price"/>
+                                    <field name="selling_price"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
